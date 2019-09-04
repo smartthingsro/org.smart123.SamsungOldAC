@@ -1,7 +1,7 @@
 {
   "id": "org.smart123.SamsungOldAC",
   "version": "1.0.0",
-  "compatibility": "2",
+  "compatibility": ">=2.0.0",
   "sdk": 2,
   "name": {
     "en": "Samsung Old AC"
@@ -25,12 +25,56 @@
     {
       "id": "samsung_old_ac",
       "name": {
+        "nl": "Samsung Old AC",
         "en": "Samsung Old AC"
       },
+      "class": "socket",
+      "pair": [
+        {
+          "id": "pair"
+        }
+      ],
       "capabilities": [
         "onoff"
       ],
-      "class": "socket",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "General settings",
+            "nl": "Algemene instellingen"
+          },
+          "children": [
+            {
+              "id": "ID",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "ID",
+                "nl": "ID"
+              }
+            },
+            {
+              "id": "Key",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "Key",
+                "nl": "Key"
+              }
+            },
+            {
+              "id": "IP",
+              "type": "text",
+              "value": "",
+              "label": {
+                "en": "IP",
+                "nl": "IP"
+              }
+            }
+          ]
+        }
+      ],
       "images": {
         "large": "/drivers/samsung_old_ac/assets/images/large.png",
         "small": "/drivers/samsung_old_ac/assets/images/small.png"

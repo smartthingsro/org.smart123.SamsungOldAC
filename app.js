@@ -2,7 +2,7 @@
 
 const Homey = require('homey');
 
-class SamsungOldAC extends Homey.App {
+class SamsungOldACApp extends Homey.App {
 	
 	onInit() {
 		this.log('SamsungOldAC is running...');
@@ -10,4 +10,4 @@ class SamsungOldAC extends Homey.App {
 	
 }
 
-module.exports = SamsungOldAC;
+module.exports = SamsungOldACApp;

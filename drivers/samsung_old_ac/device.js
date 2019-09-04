@@ -1,12 +1,17 @@
 'use strict';
 
 const Homey = require('homey');
-var API = require('samsung-airconditioner').API;
+const API = require('./samsung-discovery');
 
-class SamsungOldAC extends Homey.Device {
+class SamsungOldACDevice extends Homey.Device {
 	
 	onInit() {
+        this.registerCapabilityListener('onoff', async ( value ) => {
+			this.log('wallplug value ', value);
+        });
+        
         new API().on('discover', function(aircon) {
+            console.log('asdasd');
             // now login!
             aircon.get_token( (err, token) => {
                 if (!!err) return console.log('login error: ' + err.message);
@@ -34,4 +39,4 @@ class SamsungOldAC extends Homey.Device {
 
 }
 
-module.exports = SamsungOldAC;
+module.exports = SamsungOldACDevice;
