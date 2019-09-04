@@ -1,2 +1,3 @@
-# org.smart123.SamsungOldAC
-Homey App for Samsung AC's before 2016
+# Samsung Old AC
+
+Adds support for Samsung AC's before 2017
