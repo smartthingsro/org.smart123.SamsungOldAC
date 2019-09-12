@@ -123,7 +123,7 @@ class SamsungAirconditioner extends Emitter {
   getToken (callback) {
     var socket;
 
-    if (typeof callback !== 'function') throw new Error('callback is mandatory for get_token');
+    if (typeof callback !== 'function') throw new Error('callback is mandatory for getToken');
 
     socket = tls.connect({port: 2878, host: this.options.ip, rejectUnauthorized: false }, function() {  
       var n = 0, state;
@@ -192,7 +192,7 @@ class SamsungAirconditioner extends Emitter {
       if (!this.token) callback(err);
     });
 
-    return sethislf;
+    return this;
   }
 
   onoff (onoff) {
