@@ -12,23 +12,8 @@ class SamsungOldACDevice extends Homey.Device {
         });
 
         this.aircons = [];
-        
-        new API().on('discover', function(aircon) {
-            if (aircon.options.ip == '192.168.1.110') return;
 
-            console.log(aircon);
-            return;
-            if(this.aircons.indexOf(aircon.options.ip) === -1) {
-                this.aircons.push(aircon);
-                this.getToken(aircon);
-            } else {
-                this.login(aircon);
-            }
-        }).on('error', function(err) {
-            console.log('discovery error: ' + err.message);
-        });
-
-        var aircon = new AirCon({"ip":"192.168.1.134", "duid":"F8:04:2E:30:11:B5"});
+        var aircon = new AirCon({"ip":"192.168.1.134", "duid":"F8042E3011B5"});
         aircon.getToken( (err, token) => {
             if (!!err) return console.log('login error: ' + err.message);
             console.log(token);

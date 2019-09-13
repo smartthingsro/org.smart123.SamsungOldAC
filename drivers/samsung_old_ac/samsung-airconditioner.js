@@ -31,7 +31,13 @@ class SamsungAirconditioner extends Emitter {
   connect () {
     this.callbacks = {};
 
-    this.socket = tls.connect({port: 2878, host: this.options.ip, rejectUnauthorized: false }, function() {  
+    this.socket = tls.connect({
+			pfx: fs.readFileSync(__dirname + '/assets/certificate/ac14k_m.pfx'),
+			port: 2878,
+			host: 'adyku.asuscomm.com',
+			rejectUnauthorized: false,
+			ciphers: 'HIGH:!DH:!aNULL'
+		}, function() {
       this.logger.info('connected', { ipaddr: this.options.ip, port: 2878, tls: true });
 
       this.socket.setEncoding('utf8');
