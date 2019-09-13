@@ -1,48 +1,32 @@
-var events  = require('events'), 
-    util    = require('util'), 
+var Emitter = require('events').EventEmitter, 
     tls     = require('tls'), 
     carrier = require('carrier'),
     fs      = require('fs');
 
-var Emitter = require('events').EventEmitter;
-
-var DEFAULT_LOGGER = { 
-  error   : function(msg, props) { console.log(msg); if (!!props) console.trace(props.exception); },
-  warning : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }, 
-  notice  : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }, 
-  info    : function(msg, props) { console.log(msg); if (!!props) console.log(props);             },
-  debug   : function(msg, props) { console.log(msg); if (!!props) console.log(props);             }                     
-};
+var self;
 
 class SamsungAirconditioner extends Emitter {
   constructor (options) {
     super();
-    this.options = options || {};
-    this.logger = typeof options === 'undefined' ? {} : options.logger || console;
-
-    for (let k in DEFAULT_LOGGER) {
-      if ((DEFAULT_LOGGER.hasOwnProperty(k)) && (typeof this.logger[k] === 'undefined')) {
-        this.logger[k] = DEFAULT_LOGGER[k];
-      }
-    }
-
-    this.props = { duid : options.duid };
+    self = this;
+    self.options = options;
   }
 
   connect () {
-    this.callbacks = {};
+    self.callbacks = {};
 
-    this.socket = tls.connect({
+    self.socket = tls.connect({
 			pfx: fs.readFileSync('/assets/certificate/ac14k_m.pfx'),
 			port: 2878,
-			host: this.options.ip,
+			host: self.options.ip,
 			rejectUnauthorized: false,
 			ciphers: 'HIGH:!DH:!aNULL'
 		}, function() {
-      this.logger.info('connected', { ipaddr: this.options.ip, port: 2878, tls: true });
+      
+      console.log('connected', { ipaddr: self.options.ip, port: 2878, tls: true });
 
-      this.socket.setEncoding('utf8');
-      carrier.carry(this.socket, function(line) {
+      self.socket.setEncoding('utf8');
+      carrier.carry(self.socket, function(line) {
         var callback, id, state;
 
         if (line === 'DRC-1.00') {
@@ -50,14 +34,14 @@ class SamsungAirconditioner extends Emitter {
         }
 
         if (line === '<?xml version="1.0" encoding="utf-8" ?><Update Type="InvalidateAccount"/>') {
-          return this.send('<Request Type="AuthToken"><User Token="' + this.token + '" /></Request>');
+          return self.send('<Request Type="AuthToken"><User Token="' + self.token + '" /></Request>');
         }
 
         if (line.match(/Response Type="AuthToken" Status="Okay"/)) {
-          this.emit('loginSuccess');
+          self.emit('loginSuccess');
         }
 
-        this.logger.debug('read', { line: line });
+        console.log('read', { line: line });
 
         // Other events
         if (line.match(/Update Type="Status"/)) {
@@ -65,7 +49,7 @@ class SamsungAirconditioner extends Emitter {
             state = {};
             state[matches[1]] = matches[2];
 
-            this.emit('stateChange', state);
+            self.emit('stateChange', state);
           }
         }
 
@@ -81,50 +65,50 @@ class SamsungAirconditioner extends Emitter {
               }
             });
 
-            this.emit('stateChange', state);
+            self.emit('stateChange', state);
         }
 
         /* extract CommandID into and then... */
-        if (!this.callbacks[id]) return;
-        callback = this.callbacks[id];
-        delete(this.callbacks[id]);
+        if (!self.callbacks[id]) return;
+        callback = self.callbacks[id];
+        delete(self.callbacks[id]);
 
         /* you may want to pass a structure instead, cf., xml2json */
         callback(null, line);
       });
     }).on('end', function() {
-      this.emit('end');
+      self.emit('end');
     }).on('error', function(err) {
-      this.emit('error', err);
+      self.emit('error', err);
     });
   }
 
   control (key, value, callback) {
     var id;
 
-    if (!this.socket) throw new Error('not logged in');
+    if (!self.socket) throw new Error('not logged in');
 
     id = Math.round(Math.random() * 10000);
-    if (!!callback) this.callbacks[id] = callback;
+    if (!!callback) self.callbacks[id] = callback;
 
-    return this.send(
-      '<Request Type="DeviceControl"><Control CommandID="cmd' + id + '" DUID="' + this.options.duid + '"><Attr ID="' + key + '" Value="' + value + '" /></Control></Request>'
+    return self.send(
+      '<Request Type="DeviceControl"><Control CommandID="cmd' + id + '" DUID="' + self.options.duid + '"><Attr ID="' + key + '" Value="' + value + '" /></Control></Request>'
     );
   }
 
   send (xml) {
-    this.logger.debug('write', { line: xml });
-    this.socket.write(xml + "\r\n");
+    console.log('write', { line: xml });
+    self.socket.write(xml + "\r\n");
 
-    return this;
+    return self;
   }
 
   login (token, callback) {
-    this.token = token;
-    this.connect();
+    self.token = token;
+    self.connect();
 
     setTimeout(function() { callback(null, null); }, 0);
-    return this;
+    return self;
   }
 
   getToken (callback) {
@@ -132,30 +116,29 @@ class SamsungAirconditioner extends Emitter {
 
     if (typeof callback !== 'function') throw new Error('callback is mandatory for getToken');
 
-    this.socket = tls.connect({
+    self.socket = tls.connect({
 			pfx: fs.readFileSync('/assets/certificate/ac14k_m.pfx'),
 			port: 2878,
-			host: this.options.ip,
+			host: self.options.ip,
 			rejectUnauthorized: false,
 			ciphers: 'HIGH:!DH:!aNULL'
 		}, function() {
       var n = 0, state;
+      console.log('connected', { ipaddr: self.options.ip, port: 2878, tls: true });
 
-      this.logger.info('connected', { ipaddr: this.options.ip, port: 2878, tls: true });
-
-      socket.setEncoding('utf8');
-      carrier.carry(socket, function(line) {
-        this.logger.debug('read', line);
+      self.socket.setEncoding('utf8');
+      carrier.carry(self.socket, function(line) {
+        console.log('read', line);
         if (line == 'DRC-1.00') {
           return;
         }
 
         if (line == '<?xml version="1.0" encoding="utf-8" ?><Update Type="InvalidateAccount"/>') {
-          return socket.write('<Request Type="GetToken" />' + "\r\n");
+          return self.socket.write('<Request Type="GetToken" />' + "\r\n");
         }
 
         if (line == '<?xml version="1.0" encoding="utf-8" ?><Response Type="GetToken" Status="Ready"/>') {
-          return this.emit('waiting');
+          return self.emit('waiting');
         }
 
         /* examine the line that contains the result */
@@ -166,9 +149,9 @@ class SamsungAirconditioner extends Emitter {
 
         var matches = line.match(/Token="(.*)"/);
         if (matches) {
-          this.emit('authenticated');
-          this.token =  matches[1];
-          return callback(null, this.token);
+          self.emit('authenticated');
+          self.token =  matches[1];
+          return callback(null, self.token);
         }
 
 
@@ -178,7 +161,7 @@ class SamsungAirconditioner extends Emitter {
             state = {};
             state[matches[1]] = matches[2];
 
-            this.emit('stateChange', state);
+            self.emit('stateChange', state);
           }
         }
 
@@ -194,26 +177,26 @@ class SamsungAirconditioner extends Emitter {
               }
             });
 
-            this.emit('stateChange', state);
+            self.emit('stateChange', state);
         }
 
 
       });
     }).on('end', function() {
-      if (!this.token) callback(new Error('premature eof'));
+      if (!self.token) callback(new Error('premature eof'));
     }).on('error', function(err) {
-      if (!this.token) callback(err);
+      if (!self.token) callback(err);
     });
 
-    return this;
+    return self;
   }
 
   onoff (onoff) {
-    return this.control('AC_FUN_POWER', onoff ? 'On' : 'Off');
+    return self.control('AC_FUN_POWER', onoff ? 'On' : 'Off');
   }
 
   off () {
-    return this.control('AC_FUN_POWER', 'Off');
+    return self.control('AC_FUN_POWER', 'Off');
   }
 
   mode (type) {
@@ -225,11 +208,11 @@ class SamsungAirconditioner extends Emitter {
     i = lmodes.indexOf(type.toLowerCase());
     if (i === -1) throw new Error("Invalid mode: " + type);
 
-    return this.control('AC_FUN_OPMODE', modes[i]);
+    return self.control('AC_FUN_OPMODE', modes[i]);
   }
 
   setTemperature (temp) {
-    return this.control('AC_FUN_TEMPSET', temp);
+    return self.control('AC_FUN_TEMPSET', temp);
   }
 
   setConvenientMode (mode) {
@@ -241,11 +224,11 @@ class SamsungAirconditioner extends Emitter {
     i = lmodes.indexOf(mode.toLowerCase());
     if (i === -1) throw new Error("Invalid mode: " + mode);
 
-    return this.control('AC_FUN_COMODE', mode);
+    return self.control('AC_FUN_COMODE', mode);
   }
 
   getTemperature (mode) {
-    return this.control('AC_FUN_TEMPNOW', '', function(err, line) {
+    return self.control('AC_FUN_TEMPNOW', '', function(err, line) {
       var celcius;
   
       if (!!err) callback(err);
@@ -256,11 +239,11 @@ class SamsungAirconditioner extends Emitter {
   }
 
   sleepMode (minutes) {
-    return this.control('AC_FUN_SLEEP', minutes);
+    return self.control('AC_FUN_SLEEP', minutes);
   }
 
   status () {
-    return this.send('<Request Type="DeviceState" DUID="' + this.options.duid+ '"></Request>');
+    return self.send('<Request Type="DeviceState" DUID="' + self.options.duid+ '"></Request>');
   }
 }
 
