@@ -1,7 +1,8 @@
 var events  = require('events'), 
     util    = require('util'), 
     tls     = require('tls'), 
-    carrier = require('carrier');
+    carrier = require('carrier'),
+    fs      = require('fs');
 
 var Emitter = require('events').EventEmitter;
 
@@ -17,7 +18,7 @@ class SamsungAirconditioner extends Emitter {
   constructor (options) {
     super();
     this.options = options || {};
-    this.logger = typeof options === 'undefined' ? {} : options.logger || {};
+    this.logger = typeof options === 'undefined' ? {} : options.logger || console;
 
     for (let k in DEFAULT_LOGGER) {
       if ((DEFAULT_LOGGER.hasOwnProperty(k)) && (typeof this.logger[k] === 'undefined')) {
@@ -32,9 +33,9 @@ class SamsungAirconditioner extends Emitter {
     this.callbacks = {};
 
     this.socket = tls.connect({
-			pfx: fs.readFileSync(__dirname + '/assets/certificate/ac14k_m.pfx'),
+			pfx: fs.readFileSync('/assets/certificate/ac14k_m.pfx'),
 			port: 2878,
-			host: 'adyku.asuscomm.com',
+			host: this.options.ip,
 			rejectUnauthorized: false,
 			ciphers: 'HIGH:!DH:!aNULL'
 		}, function() {
@@ -131,7 +132,13 @@ class SamsungAirconditioner extends Emitter {
 
     if (typeof callback !== 'function') throw new Error('callback is mandatory for getToken');
 
-    socket = tls.connect({port: 2878, host: this.options.ip, rejectUnauthorized: false }, function() {  
+    this.socket = tls.connect({
+			pfx: fs.readFileSync('/assets/certificate/ac14k_m.pfx'),
+			port: 2878,
+			host: this.options.ip,
+			rejectUnauthorized: false,
+			ciphers: 'HIGH:!DH:!aNULL'
+		}, function() {
       var n = 0, state;
 
       this.logger.info('connected', { ipaddr: this.options.ip, port: 2878, tls: true });

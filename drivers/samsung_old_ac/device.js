@@ -13,7 +13,7 @@ class SamsungOldACDevice extends Homey.Device {
 
         this.aircons = [];
 
-        var aircon = new AirCon({"ip":"192.168.1.134", "duid":"F8042E3011B5"});
+        var aircon = new AirCon({"ip":"adyku.asuscomm.com", "duid":"F8042E3011B5"});
         aircon.getToken( (err, token) => {
             if (!!err) return console.log('login error: ' + err.message);
             console.log(token);
