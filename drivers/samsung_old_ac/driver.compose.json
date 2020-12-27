@@ -1,0 +1,51 @@
+{
+  "name": {
+    "nl": "Samsung Old AC",
+    "en": "Samsung Old AC"
+  },
+  "class": "thermostat",
+  "pair": [
+    {
+      "id": "pair"
+    }
+  ],
+  "capabilities": [
+    "target_temperature",
+    "measure_temperature",
+    "thermostat_mode",
+    "onoff"
+  ],
+  "settings": [
+    {
+      "type": "group",
+      "label": {
+        "en": "General settings",
+        "nl": "Algemene instellingen"
+      },
+      "children": [
+        {
+          "id": "MAC",
+          "type": "text",
+          "value": "",
+          "label": {
+            "en": "MAC",
+            "nl": "MAC"
+          }
+        },
+        {
+          "id": "IP",
+          "type": "text",
+          "value": "",
+          "label": {
+            "en": "IP",
+            "nl": "IP"
+          }
+        }
+      ]
+    }
+  ],
+  "images": {
+    "large": "/drivers/samsung_old_ac/assets/images/large.png",
+    "small": "/drivers/samsung_old_ac/assets/images/small.png"
+  }
+}

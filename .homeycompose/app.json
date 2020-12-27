@@ -1,0 +1,24 @@
+{
+  "id": "org.smart123.SamsungOldAC",
+  "version": "1.0.1",
+  "compatibility": ">=2.0.0",
+  "sdk": 2,
+  "name": {
+    "en": "Samsung Old AC"
+  },
+  "description": {
+    "en": "Adds support for Samsung AC's before 2017"
+  },
+  "category": [
+    "climate"
+  ],
+  "permissions": [],
+  "images": {
+    "large": "/assets/images/large.png",
+    "small": "/assets/images/small.png"
+  },
+  "author": {
+    "name": "Adrian Mare",
+    "email": "adrian.mare@gmail.com"
+  }
+}
