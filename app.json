@@ -28,14 +28,17 @@
         "nl": "Samsung Old AC",
         "en": "Samsung Old AC"
       },
-      "class": "socket",
+      "class": "thermostat",
       "pair": [
         {
           "id": "pair"
         }
       ],
       "capabilities": [
-        "onoff"
+        "onoff",
+        "measure_temperature",
+        "target_temperature",
+        "thermostat_mode"
       ],
       "settings": [
         {
@@ -46,21 +49,12 @@
           },
           "children": [
             {
-              "id": "ID",
+              "id": "MAC",
               "type": "text",
               "value": "",
               "label": {
-                "en": "ID",
-                "nl": "ID"
-              }
-            },
-            {
-              "id": "Key",
-              "type": "text",
-              "value": "",
-              "label": {
-                "en": "Key",
-                "nl": "Key"
+                "en": "MAC",
+                "nl": "MAC"
               }
             },
             {
