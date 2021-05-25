@@ -11,16 +11,12 @@ class SamsungOldACDevice extends Homey.Device {
             "duid": this.getStoreValue('duid')
         });
 
-        this.aircon.on('loginSuccess', () => {
-            this.aircon.getTemperature();
-        });
+        this.registerCapabilities();
+        this.registerEventListeners();
 
         this.aircon.login(this.getStoreValue('token'), function(err) {
             if (!!err) return console.log('login error: ' + err.message);
-        });        
-
-        this.registerCapabilities();
-        this.registerEventListeners();
+        });
     }
 
     registerEventListeners() {
@@ -30,6 +26,8 @@ class SamsungOldACDevice extends Homey.Device {
                     this.setCapabilityValue('measure_temperature', parseInt(states[state]));
                 }
             }
+        }).on('loginSuccess', () => {
+            this.aircon.getTemperature();
         });
     }
 
