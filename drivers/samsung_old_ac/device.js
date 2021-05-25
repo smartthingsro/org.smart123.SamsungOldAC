@@ -5,47 +5,25 @@ const API = require('../../lib/samsung-discovery');
 const AirCon = require('../../lib/samsung-airconditioner');
 
 class SamsungOldACDevice extends Homey.Device {	
-	onInit() {
+	async onInit() {
         this.aircon = new AirCon({
-            "ip": this.getSetting('IP'),
-            "duid": this.getSetting('MAC')
+            "ip": this.getStoreValue('ip'),
+            "duid": this.getStoreValue('duid')
         });
 
-        if (!this.getStoreValue('token')) {
-            this.getToken();
-        } else {
-            this.login(this.getStoreValue('token'));
-        }
-    }
-
-    getToken() {
-        this.aircon.getToken( (err, token) => {
-            if (!!err) return console.log('login error: ' + err.message);
-            this.setStoreValue('token', token);
-            this.login(token);
-        }).on('waiting', function() {
-            console.log('please power on the device within the next 30 seconds');
-        }).on('end', function() {
-            console.log('aircon disconnected');
-        }).on('err', function(err) {
-            console.log('aircon error: ' + err.message);
-        });
-    }
-
-    login(token) {
-        this.registerCapabilities();
-        this.registerEventListeners();
-
-        this.aircon.login(token, function(err) {
-            if (!!err) return console.log('login error: ' + err.message);
-        });
-    }
-
-    registerEventListeners() {
         this.aircon.on('loginSuccess', () => {
             this.aircon.getTemperature();
         });
 
+        this.aircon.login(this.getStoreValue('token'), function(err) {
+            if (!!err) return console.log('login error: ' + err.message);
+        });        
+
+        this.registerCapabilities();
+        this.registerEventListeners();
+    }
+
+    registerEventListeners() {
         this.aircon.on('stateChange', (states) => {
             for (var state in states) {
                 if (state == 'AC_FUN_TEMPNOW') {

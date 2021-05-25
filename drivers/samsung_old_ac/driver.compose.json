@@ -6,7 +6,18 @@
   "class": "thermostat",
   "pair": [
     {
-      "id": "pair"
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": {
+        "next": "authenticate"
+      },
+      "options": { "singular": true }
+    },
+    {
+      "id": "authenticate"
+    },
+    {
+      "id": "add_device"
     }
   ],
   "capabilities": [
@@ -24,21 +35,21 @@
       },
       "children": [
         {
-          "id": "MAC",
+          "id": "duid",
           "type": "text",
           "value": "",
           "label": {
-            "en": "MAC",
-            "nl": "MAC"
+            "en": "duid",
+            "nl": "duid"
           }
         },
         {
-          "id": "IP",
+          "id": "ip",
           "type": "text",
           "value": "",
           "label": {
-            "en": "IP",
-            "nl": "IP"
+            "en": "ip",
+            "nl": "ip"
           }
         }
       ]
